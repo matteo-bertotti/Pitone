@@ -1,4 +1,5 @@
 import socket
+import MTclientHandler
 
 class TCPServer:
     # Costruttore: qui si defeiniscono anche gli attributi della classe
@@ -21,7 +22,6 @@ class TCPServer:
     # Avvio GRANDE PUFFO
     def start(self):
         connection = False
-
         try:
             self.__socket.bind((self.__ipAddress, self.__port))
             self.__socket.listen(10)
@@ -29,3 +29,17 @@ class TCPServer:
         except Exception as ex:
             print(f"Errore di avvio del server: {str(ex)}")
 
+        if connection:
+            try: 
+                while True:
+                    # Attesa connessione in ingresso
+                    (clientSocket, clientAddress) = self.__socket.accept()
+                    # Creo un thread di gestione per questo client
+                    client = MTclientHandler.ClientHandler(clientSocket, clientAddress, self.__clients)
+                    # Aggiungo client al dizionario
+                    (ipClient, portClient) = clientAddress
+                    self.__clients[(ipClient, portClient)] = client
+                    # Avvio il gestore di questo client
+                    client.start()
+            except Exception:
+                print("Byte Byte")
