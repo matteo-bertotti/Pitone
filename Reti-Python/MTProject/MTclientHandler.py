@@ -39,7 +39,8 @@ class ClientHandler(threading.Thread):
                     # Qualunque errore dovesse succedere qua dentro, durante l'invio dei messaggi, questo clientHandler non deve subire alcuna anomali. DEVE FREGARSENE
                     try:
                         # Uso metodo pubblic write di ogni clientHandler
-                        c.Write(answer.encode("utf-8"))
+                        if k != (ipClient, PortClient):
+                            c.Write(answer.encode("utf-8"))
                     except Exception:
                         pass    
             # Se sono qua sono uscito dal ciclo perche non sono arrivati dati
@@ -50,5 +51,6 @@ class ClientHandler(threading.Thread):
             print(f"AHIA... Il client {self.__clientAddress} è morto")
             # Rimuovo il clientHandler dal dizionario
             # ATTENZIONE!! Questa istruzione è scritta con troppa LEGGEREZZA!!
+            # perche potrebbe comportare il crollo di un altro client / clientHandler o alla peggio una reazione a catena, per risolvere servirebbe un accesso in mutex
             self.__clients.pop((ipClient, PortClient))
             
